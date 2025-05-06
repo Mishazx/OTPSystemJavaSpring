@@ -28,6 +28,12 @@ public class User {
     @Column(unique = true)
     private String username;
 
+    @Column(unique = true)
+    private String email;
+
+    @Column(unique = true)
+    private String phone;
+
     private String password;
 
     @ManyToMany(fetch = FetchType.EAGER)
@@ -39,12 +45,6 @@ public class User {
     private Set<RoleUser> roleUsers;
 
     private boolean enabled;
-
-    private boolean accountNonExpired;
-
-    private boolean accountNonLocked;
-
-    private boolean credentialsNonExpired;
 
     private Long telegramChatId;
 

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Код подтверждения</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+        }
+        .container { 
+            padding: 20px; 
+            max-width: 600px; 
+            margin: 0 auto; 
+        }
+        .header { 
+            text-align: center; 
+            padding: 10px; 
+        }
+        .code-box { 
+            text-align: center; 
+            padding: 20px; 
+            background-color: #f7f7f7; 
+            border-radius: 5px; 
+            margin: 20px 0; 
+        }
+        .code { 
+            font-size: 30px; 
+            font-weight: bold; 
+            letter-spacing: 5px; 
+            color: #0d6efd; 
+        }
+        .footer { 
+            font-size: 12px; 
+            color: #666; 
+            text-align: center; 
+            margin-top: 20px; 
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h2>Код подтверждения</h2>
+            <h3>OTP System</h3>
+        </div>
+        <p>Здравствуйте!</p>
+        <p>Для завершения процесса авторизации используйте следующий код:</p>
+        <div class="code-box">
+            <div class="code" th:text="${code}"></div>
+        </div>
+        <p>Код действителен в течение 5 минут.</p>
+        <p>Если вы не запрашивали этот код, просто проигнорируйте это сообщение.</p>
+        <div class="footer">
+            Это автоматическое сообщение, пожалуйста, не отвечайте на него.
+        </div>
+    </div>
+</body>
+</html>

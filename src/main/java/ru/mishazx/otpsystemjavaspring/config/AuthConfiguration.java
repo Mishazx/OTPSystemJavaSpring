@@ -1,31 +1,33 @@
 package ru.mishazx.otpsystemjavaspring.config;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import ru.mishazx.otpsystemjavaspring.service.auth.AuthService;
 
-
+@Slf4j
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
 @RequiredArgsConstructor
 public class AuthConfiguration {
     private final AuthService authService;
-//    private final JwtAuthenticationFilter jwtAuthFilter;
-//    private final JwtAuthenticationProvider jwtAuthProvider;
-
+     private final JWTAuthConfiguration jwtAuthConfiguration;
 
     //Провайдер аутентификации для логина и пароля
     @Bean
@@ -36,43 +38,51 @@ public class AuthConfiguration {
         return provider;
     }
 
-
     //Конфигурация безопасности для API
     @Bean
-    public SecurityFilterChain apiSecurityFilterChain(HttpSecurity http) throws Exception {
-        http
-                .csrf(csrf -> csrf.disable())
-                .authorizeHttpRequests(auth -> auth
-                        // Только логин и регистрация доступны без JWT
-                        .requestMatchers("/api/jwt/auth").permitAll()
-                        .requestMatchers("/api/auth/register").permitAll()
-                        .requestMatchers("/api/auth/login").permitAll()
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        log.info("Configuring security filter chain");
+        
+        return http
+            // Отключаем CSRF для REST API
+            .csrf(AbstractHttpConfigurer::disable)
+            
+            // Настраиваем политику безопасности для запросов
+            .authorizeHttpRequests(auth -> {
 
-                        // Административные эндпоинты
-                        .requestMatchers("/api/admin/**").hasAuthority("ROLE_ADMIN")
+                // Публичные эндпоинты (не требуют аутентификации)
+                auth.requestMatchers(new AntPathRequestMatcher("/api/auth/**")).permitAll();
+                auth.requestMatchers(new AntPathRequestMatcher("/api/otp/**")).permitAll();
 
-                        // Все остальные запросы требуют аутентификации
-                        .anyRequest().authenticated())
-//                .authenticationProvider(jwtAuthProvider)
-                .authenticationProvider(daoAuthenticationProvider())
-//                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+                // Защищенные эндпоинты (требуют аутентификации)
+                auth.requestMatchers(new AntPathRequestMatcher("/api/telegram/**")).authenticated();
+                // Все остальные запросы требуют аутентификации
 
-                .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                auth.anyRequest().authenticated();
+            })
+            
 
-                .exceptionHandling(exc -> {
-                    exc.authenticationEntryPoint((request, response, authException) -> {
-                        response.setStatus(401);
-                        response.setContentType("application/json;charset=UTF-8");
-                        response.getWriter().write("{\"error\":\"Необходима JWT аутентификация\"}");
-                    });
-                    exc.accessDeniedHandler((request, response, accessDeniedException) -> {
-                        response.setStatus(403);
-                        response.setContentType("application/json;charset=UTF-8");
-                        response.getWriter().write("{\"error\":\"Доступ запрещен\"}");
-                    });
-                });
+            .sessionManagement(session -> 
+                session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            )
 
-        return http.build();
+            // Настраиваем провайдер аутентификации
+            .authenticationProvider(authenticationProvider())
+
+            // Добавляем JWT фильтр перед стандартным фильтром аутентификации
+            .addFilterBefore(jwtAuthConfiguration, UsernamePasswordAuthenticationFilter.class)
+
+            // Строим конфигурацию
+            .build();
+    }
+
+    @Bean
+    public AuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        provider.setUserDetailsService(authService);
+        provider.setPasswordEncoder(passwordEncoder());
+        log.info("Configured DaoAuthenticationProvider with userService and passwordEncoder");
+        return provider;
     }
 
     //Предоставляет AuthenticationManager для JWT аутентификации

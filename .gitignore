@@ -34,3 +34,6 @@ build/
 
 # Секретные свойства
 secret.properties
+
+# папка с SMPP сервером
+SMPPSim-bug-fix-v3.0.0

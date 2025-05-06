@@ -7,12 +7,16 @@ import java.util.Optional;
 
 @Repository
 public interface UserRepository extends JpaRepository<User,Long> {
-
-    //Ищет пользователя по логину (username).
+    // Ищет пользователя по логину (username).
     Optional<User> findByUsername (String login);
-    //Ищет пользователя по токену для регистрации через Telegram.
+    // Ищет пользователя по почте (Email).
+    Optional<User> findByEmail (String email);
+    // Ищет пользователя по токен для регистрации через Telegram.
     Optional<User> findByTelegramLinkToken(String token);
-
-    //Ищет пользователя по идентификатору Telegram чата.
+    // Ищет пользователя по номеру телефона
+    Optional<User> findByPhone(String phone);
+    // Ищет пользователя по идентификатору Telegram чата.
     Optional<User> findByTelegramChatId(Long chatId);
+    // Получить номер телефон пользователя по логину пользователя.
+    User findPhoneNumberByUsername(String username);
 }

@@ -25,11 +25,9 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Slf4j
 public class AuthController {
-
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final RoleService roleService;
-//    private final UserRoleService userRoleService;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
@@ -38,10 +36,22 @@ public class AuthController {
     public ResponseEntity<APIResponse<?>> registerUser(@RequestBody Map<String, String> request) {
         String username = request.get("username");
         String password = request.get("password");
+        String email = request.get("email");
+        String phone = request.get("phone");
 
         if (username == null || password == null) {
             log.warn("Попытка регистрации с пустым именем пользователя или паролем");
             return ResponseEntity.badRequest().body(new APIResponse<>("error", "Имя пользователя и пароль обязательны", null));
+        }
+
+        if (email == null) {
+            log.warn("Попытка регистрации без указания email");
+            return ResponseEntity.badRequest().body(new APIResponse<>("error", "Email обязателен", null));
+        }
+
+        if (phone == null) {
+            log.warn("Попытка регистрации без указания телефона");
+            return ResponseEntity.badRequest().body(new APIResponse<>("error", "Телефон обязателен", null));
         }
 
         if (userRepository.findByUsername(username).isPresent()) {
@@ -49,14 +59,20 @@ public class AuthController {
             return ResponseEntity.badRequest().body(new APIResponse<>("error", "Пользователь с таким именем уже существует", null));
         }
 
+        if (userRepository.findByEmail(email).isPresent()) {
+            log.warn("Попытка регистрации с существующим email: {}", email);
+            return ResponseEntity.badRequest().body(new APIResponse<>("error", "Пользователь с таким email уже существует", null));
+        }
+
+
+
         try {
             User newUser = User.builder()
                     .username(username)
                     .password(passwordEncoder.encode(password))
+                    .email(email)
+                    .phone(phone)
                     .enabled(true)
-                    .accountNonExpired(true)
-                    .accountNonLocked(true)
-                    .credentialsNonExpired(true)
                     .build();
 
             boolean isAdmin = roleService.assignRolesForNewUser(newUser);
@@ -72,6 +88,8 @@ public class AuthController {
             responseData.put("token", token);
             responseData.put("id", savedUser.getId());
             responseData.put("username", savedUser.getUsername());
+            responseData.put("email", savedUser.getEmail());
+            responseData.put("phone", savedUser.getPhone());
             responseData.put("roles", savedUser.getRoleUsers().stream()
                     .map(role -> role.getNameRole())
                     .toList());
