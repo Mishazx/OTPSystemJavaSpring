@@ -2,57 +2,132 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Код подтверждения</title>
+    <title>Ваш код подтверждения</title>
     <style>
-        body { 
-            font-family: Arial, sans-serif; 
+        /* Сброс стилей */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-        .container { 
-            padding: 20px; 
-            max-width: 600px; 
-            margin: 0 auto; 
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #74ABE2, #5563DE);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: #333;
         }
-        .header { 
-            text-align: center; 
-            padding: 10px; 
+
+        .container {
+            background-color: #fff;
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            width: 100%;
+            overflow: hidden;
+            animation: fadeIn 1s ease-in-out;
         }
-        .code-box { 
-            text-align: center; 
-            padding: 20px; 
-            background-color: #f7f7f7; 
-            border-radius: 5px; 
-            margin: 20px 0; 
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-        .code { 
-            font-size: 30px; 
-            font-weight: bold; 
-            letter-spacing: 5px; 
-            color: #0d6efd; 
+
+        .header {
+            background: linear-gradient(135deg, #5563DE, #74ABE2);
+            color: #fff;
+            text-align: center;
+            padding: 20px;
         }
-        .footer { 
-            font-size: 12px; 
-            color: #666; 
-            text-align: center; 
-            margin-top: 20px; 
+
+        .header h2 {
+            margin-bottom: 5px;
+            font-size: 24px;
+        }
+
+        .header h3 {
+            font-weight: normal;
+            font-size: 18px;
+        }
+
+        .content {
+            padding: 30px 20px;
+            text-align: center;
+        }
+
+        .content p {
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        .code-box {
+            margin: 20px auto;
+            background: #f1f9ff;
+            border: 2px dashed #74ABE2;
+            padding: 25px;
+            border-radius: 8px;
+            width: fit-content;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.98); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(0.98); }
+        }
+
+        .code {
+            font-size: 36px;
+            letter-spacing: 8px;
+            color: #5563DE;
+            font-weight: bold;
+        }
+
+        .footer {
+            background-color: #f9f9f9;
+            font-size: 12px;
+            color: #999;
+            text-align: center;
+            padding: 15px;
+            border-top: 1px solid #ececec;
+        }
+
+        /* Адаптив для мобильных устройств */
+        @media (max-width: 600px) {
+            .container {
+                margin: 20px;
+            }
+            .content p {
+                font-size: 14px;
+            }
+            .code {
+                font-size: 30px;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h2>Код подтверждения</h2>
-            <h3>OTP System</h3>
-        </div>
-        <p>Здравствуйте!</p>
-        <p>Для завершения процесса авторизации используйте следующий код:</p>
+<div class="container">
+    <div class="header">
+        <h2>Ваш код подтверждения</h2>
+        <h3>OTP Сервис</h3>
+    </div>
+    <div class="content">
+        <p>Приветствуем Вас!</p>
+        <p>Чтобы продолжить вход в систему, используйте указанный ниже код.</p>
         <div class="code-box">
             <div class="code" th:text="${code}"></div>
         </div>
-        <p>Код действителен в течение 5 минут.</p>
-        <p>Если вы не запрашивали этот код, просто проигнорируйте это сообщение.</p>
-        <div class="footer">
-            Это автоматическое сообщение, пожалуйста, не отвечайте на него.
-        </div>
+        <p>Обратите внимание: код будет действителен в течение 5 минут.</p>
+        <p>Если Вы не запрашивали этот код, пожалуйста, проигнорируйте это сообщение.</p>
     </div>
+    <div class="footer">
+        Это письмо отправлено автоматически. Пожалуйста, не отвечайте на него.
+    </div>
+</div>
 </body>
 </html>

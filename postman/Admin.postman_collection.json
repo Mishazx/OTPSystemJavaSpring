@@ -1,0 +1,298 @@
+{
+	"info": {
+		"_postman_id": "5ecfff6d-47e8-4703-b2bf-4b7ada6c20ea",
+		"name": "Admin",
+		"description": "Коллекция запросов для административных функций.\nВсе эндпоинты защищены JWT-авторизацией и требуют наличия роли ADMIN.\nПозволяет управлять пользователями, просматривать и управлять OTP-кодами,\nа также выполнять административные операции.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "29955196",
+		"_collection_link": "https://www.postman.com/planetary-star-90212/workspace/otpsystemjavaspring/collection/29955196-5ecfff6d-47e8-4703-b2bf-4b7ada6c20ea?action=share&source=collection_link&creator=29955196"
+	},
+	"item": [
+		{
+			"name": "Авторизация администратора",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"admin\",\n    \"password\": \"admin\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{protocol}}://{{domain}}/api/auth/login",
+					"protocol": "{{protocol}}",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"api",
+						"auth",
+						"login"
+					]
+				},
+				"description": "Авторизация администратора в системе.\nПосле успешной авторизации возвращается JWT-токен для доступа к защищенным ресурсам.\nРекомендуется сохранить токен в переменной vault:admin-token для использования в других запросах.\n\nВажные поля:\n- username - имя пользователя (администратора)\n- password - пароль\n\nНеобязательные поля: Нет"
+			},
+			"response": []
+		},
+		{
+			"name": "Получение списка пользователей",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{vault:admin-token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{protocol}}://{{domain}}/api/admin/users",
+					"protocol": "{{protocol}}",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"api",
+						"admin",
+						"users"
+					]
+				},
+				"description": "Получает список всех пользователей системы.\nВозвращает основную информацию о пользователях: идентификатор, имя, email, телефон,\nстатус активации, роли и информацию о привязке к Telegram.\nТребует роль администратора.\n\nВажные поля: Нет (GET-запрос без тела)\nНеобязательные поля: Нет"
+			},
+			"response": []
+		},
+		{
+			"name": "Получение информации о пользователе",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{vault:admin-token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{protocol}}://{{domain}}/api/admin/users/:userId",
+					"protocol": "{{protocol}}",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"api",
+						"admin",
+						"users",
+						":userId"
+					],
+					"variable": [
+						{
+							"key": "userId",
+							"value": "1",
+							"description": "Идентификатор пользователя"
+						}
+					]
+				},
+				"description": "Получает детальную информацию о конкретном пользователе.\nВключает все данные пользователя (кроме пароля), а также\nисторию его OTP-кодов.\nТребует роль администратора.\n\nВажные поля:\n- userId (параметр URL) - идентификатор пользователя\n\nНеобязательные поля: Нет"
+			},
+			"response": []
+		},
+		{
+			"name": "Изменение статуса пользователя",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{vault:admin-token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"url": {
+					"raw": "{{protocol}}://{{domain}}/api/admin/users/:userId/toggle-status",
+					"protocol": "{{protocol}}",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"api",
+						"admin",
+						"users",
+						":userId",
+						"toggle-status"
+					],
+					"variable": [
+						{
+							"key": "userId",
+							"value": "2",
+							"description": "Идентификатор пользователя"
+						}
+					]
+				},
+				"description": "Изменяет статус активации пользователя (блокировка/разблокировка).\nЕсли пользователь был активен - деактивирует его, если неактивен - активирует.\nВозвращает обновленный статус пользователя.\nТребует роль администратора.\n\nВажные поля:\n- userId (параметр URL) - идентификатор пользователя\n\nНеобязательные поля: Нет"
+			},
+			"response": []
+		},
+		{
+			"name": "Получение активных OTP-кодов",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{vault:admin-token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{protocol}}://{{domain}}/api/admin/otp/active",
+					"protocol": "{{protocol}}",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"api",
+						"admin",
+						"otp",
+						"active"
+					]
+				},
+				"description": "Получает список всех активных OTP-кодов в системе.\nВключает полную информацию о кодах и ссылку на пользователя.\nПолезно для мониторинга активных кодов и аудита.\nТребует роль администратора.\n\nВажные поля: Нет (GET-запрос без тела)\nНеобязательные поля: Нет"
+			},
+			"response": []
+		},
+		{
+			"name": "Аннулирование OTP-кода",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{vault:admin-token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{protocol}}://{{domain}}/api/admin/otp/:otpId/revoke",
+					"protocol": "{{protocol}}",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"api",
+						"admin",
+						"otp",
+						":otpId",
+						"revoke"
+					],
+					"variable": [
+						{
+							"key": "otpId",
+							"value": "1",
+							"description": "Идентификатор OTP-кода для аннулирования"
+						}
+					]
+				},
+				"description": "Аннулирует (отзывает) конкретный активный OTP-код.\nИзменяет статус кода с ACTIVE на EXPIRED, делая его недействительным.\nВернет ошибку, если код уже был использован или просрочен.\nТребует роль администратора.\n\nВажные поля:\n- otpId (параметр URL) - идентификатор OTP-кода для аннулирования\n\nНеобязательные поля: Нет"
+			},
+			"response": []
+		},
+		{
+			"name": "Получение всех OTP-файлов",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{vault:admin-token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{protocol}}://{{domain}}/api/admin/otp/files",
+					"protocol": "{{protocol}}",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"api",
+						"admin",
+						"otp",
+						"files"
+					]
+				},
+				"description": "Получает список всех файлов с OTP-кодами всех пользователей.\nФайлы группируются по пользователям для удобного просмотра.\nДля каждого файла возвращается имя, путь, размер и дата изменения.\nТребует роль администратора.\n\nВажные поля: Нет (GET-запрос без тела)\nНеобязательные поля: Нет"
+			},
+			"response": []
+		},
+		{
+			"name": "Очистка устаревших OTP-кодов",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{vault:admin-token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{protocol}}://{{domain}}/api/admin/otp/cleanup",
+					"protocol": "{{protocol}}",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"api",
+						"admin",
+						"otp",
+						"cleanup"
+					]
+				},
+				"description": "Очищает устаревшие OTP-коды.\nНаходит все активные коды с истекшим сроком действия и меняет их статус на EXPIRED.\nВозвращает количество обработанных кодов.\nПолезно для регулярной автоматической очистки.\nТребует роль администратора.\n\nВажные поля: Нет (POST-запрос без тела)\nНеобязательные поля: Нет"
+			},
+			"response": []
+		}
+	]
+}

@@ -1,0 +1,152 @@
+{
+	"info": {
+		"_postman_id": "9d4b3636-16cf-4016-b343-3dc2110097dd",
+		"name": "OTP",
+		"description": "Коллекция запросов для работы с одноразовыми паролями (OTP).\nВключает генерацию OTP-кодов различными способами (SMS, Email, Telegram)\nи верификацию кодов. Большинство эндпоинтов публичные (не требуют JWT),\nза исключением верификации.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "29955196",
+		"_collection_link": "https://www.postman.com/planetary-star-90212/workspace/otpsystemjavaspring/collection/29955196-9d4b3636-16cf-4016-b343-3dc2110097dd?action=share&source=collection_link&creator=29955196"
+	},
+	"item": [
+		{
+			"name": "Отправка OTP через Telegram",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"user\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{protocol}}://{{domain}}/api/otp/telegram",
+					"protocol": "{{protocol}}",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"api",
+						"otp",
+						"telegram"
+					]
+				},
+				"description": "Отправляет OTP-код через Telegram.\nТребует указания имени пользователя, чей аккаунт должен быть предварительно привязан к Telegram.\nИспользует Telegram Bot API для отправки сообщения с кодом.\nНе требует JWT-авторизации.\n\nВажные поля:\n- username - имя пользователя, которому отправляется OTP-код\n\nНеобязательные поля: Нет"
+			},
+			"response": []
+		},
+		{
+			"name": "Проверка OTP-кода",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{vault:authorization-secret}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"user\",\n    \"code\": 589783\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{protocol}}://{{domain}}/api/otp/verify",
+					"protocol": "{{protocol}}",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"api",
+						"otp",
+						"verify"
+					]
+				},
+				"description": "Проверяет OTP-код для указанного пользователя.\nПередает имя пользователя и код для проверки.\nВозвращает статус проверки (успешно/неуспешно) и сообщение.\nПроверка включает валидность кода и срок его действия.\nНе требует JWT-авторизации.\n\nВажные поля:\n- username - имя пользователя, чей код проверяется\n- code - OTP-код для проверки\n\nНеобязательные поля: Нет"
+			},
+			"response": []
+		},
+		{
+			"name": "Отправка OTP через SMS",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\":\"user\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{protocol}}://{{domain}}/api/otp/sms",
+					"protocol": "{{protocol}}",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"api",
+						"otp",
+						"sms"
+					]
+				},
+				"description": "Отправляет OTP-код через SMS.\nГенерирует новый код для указанного пользователя и отправляет на номер телефона,\nсохраненный в профиле пользователя.\nИспользует протокол SMPP для отправки SMS.\nНе требует JWT-авторизации.\n\nВажные поля:\n- username - имя пользователя, которому отправляется OTP-код\n\nНеобязательные поля: Нет"
+			},
+			"response": []
+		},
+		{
+			"name": "Отправка OTP по Email",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\":\"user\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{protocol}}://{{domain}}/api/otp/email",
+					"protocol": "{{protocol}}",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"api",
+						"otp",
+						"email"
+					]
+				},
+				"description": "Отправляет OTP-код по электронной почте.\nГенерирует новый код для указанного пользователя и отправляет на email,\nсохраненный в профиле пользователя.\nИспользует HTML-шаблон для форматирования письма.\nНе требует JWT-авторизации.\n\nВажные поля:\n- username - имя пользователя, которому отправляется OTP-код\n\nНеобязательные поля: Нет"
+			},
+			"response": []
+		}
+	]
+}

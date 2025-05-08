@@ -54,8 +54,11 @@ public class AuthConfiguration {
                 auth.requestMatchers(new AntPathRequestMatcher("/api/auth/**")).permitAll();
                 auth.requestMatchers(new AntPathRequestMatcher("/api/otp/**")).permitAll();
 
+                auth.requestMatchers(new AntPathRequestMatcher("/api/export/csv/all")).permitAll();
+
                 // Защищенные эндпоинты (требуют аутентификации)
                 auth.requestMatchers(new AntPathRequestMatcher("/api/telegram/**")).authenticated();
+                auth.requestMatchers(new AntPathRequestMatcher("/api/admin/**")).hasRole("ADMIN");
                 // Все остальные запросы требуют аутентификации
 
                 auth.anyRequest().authenticated();

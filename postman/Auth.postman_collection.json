@@ -1,0 +1,152 @@
+{
+	"info": {
+		"_postman_id": "26edc09a-c1bf-4a82-8625-d65b94f423a9",
+		"name": "Auth",
+		"description": "Коллекция запросов для аутентификации и авторизации пользователей.\nВключает регистрацию новых пользователей и вход в систему (с получением JWT-токена).\nВсе эндпоинты публичные и не требуют предварительной авторизации.\nПолученный токен используется в других коллекциях для доступа к защищенным ресурсам.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "29955196",
+		"_collection_link": "https://www.postman.com/planetary-star-90212/workspace/otpsystemjavaspring/collection/29955196-26edc09a-c1bf-4a82-8625-d65b94f423a9?action=share&source=collection_link&creator=29955196"
+	},
+	"item": [
+		{
+			"name": "Регистрация пользователя",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"user\",\n    \"email\": \"michael.konowalov@yandex.ru\",\n    \"phone\": \"+79001230023\",\n    \"password\": \"user\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{protocol}}://{{domain}}/api/auth/register",
+					"protocol": "{{protocol}}",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"api",
+						"auth",
+						"register"
+					]
+				},
+				"description": "Регистрирует нового пользователя в системе.\nТребует указания имени пользователя, email, телефона и пароля.\nПроверяет уникальность имени пользователя и email.\nВозвращает JWT-токен для немедленной авторизации после успешной регистрации.\nАвтоматически определяет роль пользователя (админ или пользователь).\n\nВажные поля:\n- username - имя пользователя (уникальное)\n- password - пароль\n- email - адрес электронной почты (уникальный)\n- phone - номер телефона\n\nНеобязательные поля: Нет"
+			},
+			"response": []
+		},
+		{
+			"name": "Регистрация второго пользователя",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"user2\",\n    \"email\": \"michael.konowalov@mail.ru\",\n    \"phone\": \"+79001230024\",\n    \"password\": \"user\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{protocol}}://{{domain}}/api/auth/register",
+					"protocol": "{{protocol}}",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"api",
+						"auth",
+						"register"
+					]
+				},
+				"description": "Регистрирует второго тестового пользователя в системе.\nАналогичен основному запросу регистрации, но с другими данными пользователя.\nУдобно для тестирования взаимодействия между разными пользователями,\nа также для проверки уникальности имен пользователей и email.\n\nВажные поля:\n- username - имя пользователя (уникальное)\n- password - пароль\n- email - адрес электронной почты (уникальный)\n- phone - номер телефона\n\nНеобязательные поля: Нет"
+			},
+			"response": []
+		},
+		{
+			"name": "Авторизация пользователя",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"user\",\n    \"password\": \"user\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{protocol}}://{{domain}}/api/auth/login",
+					"protocol": "{{protocol}}",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"api",
+						"auth",
+						"login"
+					]
+				},
+				"description": "Авторизация обычного пользователя в системе.\nТребует указания имени пользователя и пароля.\nВозвращает JWT-токен при успешной авторизации, который можно сохранить\nв переменной vault:authorization-secret для использования в других запросах.\nИмеет доступ к операциям с правами USER.\n\nВажные поля:\n- username - имя пользователя\n- password - пароль\n\nНеобязательные поля: Нет"
+			},
+			"response": []
+		},
+		{
+			"name": "Авторизация администратора",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"admin\",\n    \"password\": \"admin123\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{protocol}}://{{domain}}/api/auth/login",
+					"protocol": "{{protocol}}",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"api",
+						"auth",
+						"login"
+					]
+				},
+				"description": "Авторизация администратора в системе.\nТребует указания имени администратора и пароля.\nВозвращает JWT-токен с расширенными правами при успешной авторизации,\nкоторый можно сохранить в переменной vault:admin-token\nдля использования в запросах, требующих административных прав.\n\nВажные поля:\n- username - имя пользователя (администратора)\n- password - пароль\n\nНеобязательные поля: Нет"
+			},
+			"response": []
+		}
+	]
+}

@@ -26,6 +26,7 @@ public class OTPService {
     private final SecureRandom random = new SecureRandom();
     private final OTPCodeRepository otpCodeRepository;
     private final OTPConfigurationRepository otpConfigRepository;
+    private final FileOTPService fileOTPService;
 
     public String generateOTP(int length) {
         StringBuilder sb = new StringBuilder(length);
@@ -100,6 +101,14 @@ public class OTPService {
     @Transactional
     public OTPCode generateEmailOtpWithoutSending(User user, String email) {
         return generateOtpWithoutSending(user, email, OTPChannel.EMAIL);
+    }
+
+    @Transactional
+    public OTPCode generateFileOtpWithoutSending(User user) {
+        OTPCode otpCode = generateOtpWithoutSending(user, user.getUsername(), OTPChannel.FILE);
+        fileOTPService.saveOTPToFile(otpCode);
+        log.info("Сгенерирован OTP-код {} и сохранен в файл для пользователя {}", otpCode.getCode(), user.getUsername());
+        return otpCode;
     }
 
     @Transactional

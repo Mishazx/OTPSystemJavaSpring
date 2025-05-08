@@ -32,8 +32,18 @@ build/
 ### VS Code ###
 .vscode/
 
+### Maven ###
+.mvn/
+
 # Секретные свойства
 secret.properties
 
 # папка с SMPP сервером
 SMPPSim-bug-fix-v3.0.0
+
+# папка с логами
+logs/
+
+# папка с файлами
+otp_codes/
+

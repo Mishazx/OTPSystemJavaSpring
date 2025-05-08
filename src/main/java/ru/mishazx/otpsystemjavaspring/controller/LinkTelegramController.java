@@ -19,7 +19,7 @@ import java.util.HashMap;
 @RequestMapping("/api/telegram")
 @RequiredArgsConstructor
 @Slf4j
-public class OTPTelegramController {
+public class LinkTelegramController {
     private final TelegramBotService telegramBotService;
     private final TelegramLinkService telegramLinkService;
     private final UserRepository userRepository;
@@ -62,7 +62,7 @@ public class OTPTelegramController {
     }
 
 
-    //Проверка кода и связывание аккаунта Telegram
+    //Проверка кода и связывание аккаунта Telegram (требует JWT)
     @PostMapping("/verify")
     public ResponseEntity<Map<String, Object>> verifyLink(
             Authentication authentication,
@@ -96,7 +96,7 @@ public class OTPTelegramController {
             
             log.info("Найден chatId: {} для кода: '{}' (пользователь: '{}')", chatId, code, username);
 
-            telegramLinkService.directLinkTelegramAccount(username, chatId);
+            boolean status = telegramLinkService.directLinkTelegramAccount(username, chatId);
             log.info("Привязка напрямую выполнена для пользователя {} с chatId {}", username, chatId);
 
             telegramBotService.removeToken(code);

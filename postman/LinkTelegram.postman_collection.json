@@ -1,0 +1,145 @@
+{
+	"info": {
+		"_postman_id": "80924bef-2119-4727-a9e6-20ff1ebbde61",
+		"name": "LinkTelegram",
+		"description": "Коллекция запросов для связывания учетной записи пользователя с Telegram.\nВключает генерацию токена для привязки, проверку статуса привязки,\nотправку сообщений и верификацию через Telegram.\nВсе эндпоинты защищены JWT-авторизацией.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "29955196",
+		"_collection_link": "https://www.postman.com/planetary-star-90212/workspace/otpsystemjavaspring/collection/29955196-80924bef-2119-4727-a9e6-20ff1ebbde61?action=share&source=collection_link&creator=29955196"
+	},
+	"item": [
+		{
+			"name": "Генерация токена для привязки",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{vault:authorization-secret}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{protocol}}://{{domain}}/api/telegram/link",
+					"protocol": "{{protocol}}",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"api",
+						"telegram",
+						"link"
+					]
+				},
+				"description": "Генерирует уникальный токен для привязки аккаунта к Telegram.\nВозвращает токен, который нужно отправить боту для связывания аккаунтов.\nТокен имеет ограниченный срок действия и уникален для каждого пользователя.\nТребует JWT-авторизации для идентификации пользователя.\n\nВажные поля: Нет (GET-запрос без тела)\nНеобязательные поля: Нет"
+			},
+			"response": []
+		},
+		{
+			"name": "Проверка статуса привязки",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{vault:authorization-secret}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{protocol}}://{{domain}}/api/telegram/status",
+					"protocol": "{{protocol}}",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"api",
+						"telegram",
+						"status"
+					]
+				},
+				"description": "Проверяет статус привязки аккаунта к Telegram.\nВозвращает информацию о том, привязан ли аккаунт к Telegram и,\nесли привязан, возвращает некоторую информацию о чате.\nТребует JWT-авторизации для идентификации пользователя.\n\nВажные поля: Нет (GET-запрос без тела)\nНеобязательные поля: Нет"
+			},
+			"response": []
+		},
+		{
+			"name": "Отправка тестового сообщения",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{vault:authorization-secret}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{protocol}}://{{domain}}/api/telegram/send",
+					"protocol": "{{protocol}}",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"api",
+						"telegram",
+						"send"
+					]
+				},
+				"description": "Отправляет тестовое сообщение в привязанный Telegram чат.\nИспользуется для проверки работоспособности интеграции.\nВозвращает статус отправки сообщения.\nТребует JWT-авторизации и привязанного чата Telegram.\n\nВажные поля: Нет (POST-запрос без тела)\nНеобязательные поля: Нет"
+			},
+			"response": []
+		},
+		{
+			"name": "Проверка OTP-кода из Telegram",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{vault:authorization-secret}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"code\": 975520\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{protocol}}://{{domain}}/api/telegram/verify",
+					"protocol": "{{protocol}}",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"api",
+						"telegram",
+						"verify"
+					]
+				},
+				"description": "Проверяет OTP-код, полученный через Telegram.\nПередает код для проверки и использует JWT-токен для определения пользователя.\nВозвращает статус проверки и результат.\nИспользуется для верификации пользователя после получения кода через Telegram.\n\nВажные поля:\n- code - OTP-код для проверки\n\nНеобязательные поля: Нет"
+			},
+			"response": []
+		}
+	]
+}

@@ -1,0 +1,176 @@
+{
+	"info": {
+		"_postman_id": "dcfcf873-e32d-4e8b-9b44-66c2519a0ae5",
+		"name": "Export",
+		"description": "Коллекция запросов для работы с экспортом OTP-кодов и файлами.\nВсе эндпоинты защищены JWT-авторизацией и доступны авторизованным пользователям.\nАдминистраторы имеют дополнительные возможности для получения полной истории.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "29955196",
+		"_collection_link": "https://www.postman.com/planetary-star-90212/workspace/otpsystemjavaspring/collection/29955196-dcfcf873-e32d-4e8b-9b44-66c2519a0ae5?action=share&source=collection_link&creator=29955196"
+	},
+	"item": [
+		{
+			"name": "Экспорт CSV",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{vault:authorization-secret}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{protocol}}://{{domain}}/api/export/csv",
+					"protocol": "{{protocol}}",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"api",
+						"export",
+						"csv"
+					]
+				},
+				"description": "Экспортирует историю OTP-кодов текущего пользователя в формате CSV.\nРезультат возвращается как файл для скачивания.\nЗащищено JWT-авторизацией и доступно только для владельца аккаунта.\n\nВажные поля: Нет (GET-запрос без тела)\nНеобязательные поля: Нет"
+			},
+			"response": []
+		},
+		{
+			"name": "Экспорт всей истории CSV",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{vault:authorization-secret}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{protocol}}://{{domain}}/api/export/csv/all",
+					"protocol": "{{protocol}}",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"api",
+						"export",
+						"csv",
+						"all"
+					]
+				},
+				"description": "Экспортирует полную историю OTP-кодов всех пользователей.\nТребует роли администратора.\nРезультат возвращается как CSV-файл с дополнительным столбцом имени пользователя.\n\nВажные поля: Нет (GET-запрос без тела)\nНеобязательные поля: Нет"
+			},
+			"response": []
+		},
+		{
+			"name": "Генерация OTP-файла",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{vault:authorization-secret}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{protocol}}://{{domain}}/api/export/otp",
+					"protocol": "{{protocol}}",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"api",
+						"export",
+						"otp"
+					]
+				},
+				"description": "Генерирует новый OTP-код и сохраняет его в файл.\nИспользует JWT-токен для идентификации пользователя.\nВозвращает сгенерированный код и статус операции.\nФайл сохраняется в директории, указанной в настройках приложения.\n\nВажные поля: Нет (POST-запрос без тела)\nНеобязательные поля: Нет"
+			},
+			"response": []
+		},
+		{
+			"name": "Получение списка OTP-файлов",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{vault:authorization-secret}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{protocol}}://{{domain}}/api/export/files",
+					"protocol": "{{protocol}}",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"api",
+						"export",
+						"files"
+					]
+				},
+				"description": "Получает список всех файлов с OTP-кодами текущего пользователя.\nВозвращает информацию о файлах, включая имя, путь, размер и дату изменения.\nЗащищено JWT-авторизацией и пользователь может видеть только свои файлы.\n\nВажные поля: Нет (GET-запрос без тела)\nНеобязательные поля: Нет"
+			},
+			"response": []
+		},
+		{
+			"name": "Получение содержимого OTP-файла",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{vault:authorization-secret}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{protocol}}://{{domain}}/api/export/file/:filename",
+					"protocol": "{{protocol}}",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"api",
+						"export",
+						"file",
+						":filename"
+					],
+					"variable": [
+						{
+							"key": "filename",
+							"value": "username_timestamp_code.txt",
+							"description": "Имя файла в формате username_timestamp_code.txt"
+						}
+					]
+				},
+				"description": "Получает содержимое конкретного файла с OTP-кодом.\nПользователь может получить доступ только к своим файлам (проверяется префикс имени файла).\nВозвращает текстовое содержимое файла или ошибку, если файл не найден или доступ запрещен.\n\nВажные поля:\n- filename (параметр URL) - имя файла для получения\n\nНеобязательные поля: Нет"
+			},
+			"response": []
+		}
+	]
+}

@@ -10,11 +10,9 @@ import ru.mishazx.otpsystemjavaspring.model.User;
 import ru.mishazx.otpsystemjavaspring.repository.OTPCodeRepository;
 import ru.mishazx.otpsystemjavaspring.repository.UserRepository;
 
+import java.nio.charset.StandardCharsets;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-
-
-//Сервис для экспорта истории OTP в формате CSV
 
 @Service
 @RequiredArgsConstructor
@@ -23,19 +21,30 @@ public class OTPDownloadService {
     private final OTPCodeRepository otpCodeRepository;
     private final UserRepository userRepository;
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-    
 
-    //Экспорт истории OTP в CSV для пользователя
+    /**
+     * Экспорт истории OTP в CSV для конкретного пользователя.
+     * Формирует CSV-файл динамически в памяти и возвращает его как Resource.
+     *
+     * @param username имя пользователя
+     * @return CSV-файл с историей OTP в виде ресурса
+     */
     public Resource exportOtpHistoryToCsv(String username) {
         log.info("Экспорт истории OTP в CSV для пользователя: {}", username);
         
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
         
-        return new ByteArrayResource(generateOtpHistoryCsv(user).getBytes());
+        String csvContent = generateOtpHistoryCsv(user);
+        return new ByteArrayResource(csvContent.getBytes(StandardCharsets.UTF_8));
     }
-
-    //Экспорт всей истории OTP в CSV (для администраторов)
+    
+    /**
+     * Экспорт всей истории OTP в CSV для администраторов.
+     * Формирует CSV-файл для всех пользователей, без сохранения на диск.
+     *
+     * @return CSV-файл со всей историей OTP в виде ресурса
+     */
     public Resource exportAllOtpHistoryToCsv() {
         log.info("Экспорт всей истории OTP в CSV");
         
@@ -65,10 +74,15 @@ public class OTPDownloadService {
             }
         }
         
-        return new ByteArrayResource(csv.toString().getBytes());
+        return new ByteArrayResource(csv.toString().getBytes(StandardCharsets.UTF_8));
     }
-
-    //Генерирует CSV с историей OTP кодов для пользователя
+    
+    /**
+     * Генерирует CSV-содержимое истории OTP кодов для конкретного пользователя.
+     *
+     * @param user пользователь, для которого формируется CSV
+     * @return Строка с CSV содержимым
+     */
     private String generateOtpHistoryCsv(User user) {
         List<OTPCode> codes = otpCodeRepository.findByUser(user);
         
@@ -99,5 +113,24 @@ public class OTPDownloadService {
         log.info("Сгенерирована CSV история OTP для пользователя {}, найдено {} записей", 
                 user.getUsername(), codes.size());
         return csv.toString();
+    }
+    
+    /**
+     * Пример генерации произвольного текстового файла для пользователя.
+     * Данный метод позволяет сформировать содержимое и отдать его в виде resource без сохранения на диск.
+     *
+     * @param username имя пользователя
+     * @return текстовый файл в виде Resource
+     */
+    public Resource generateTextReport(String username) {
+        log.info("Генерация текстового отчёта для пользователя: {}", username);
+        
+        // Пример содержимого отчёта
+        String reportContent = "Отчёт для пользователя " + username + "\n"
+                + "Статистика по OTP кодам:\n"
+                + "Количество запросов: " + otpCodeRepository.findByUser(userRepository.findByUsername(username)
+                        .orElseThrow(() -> new RuntimeException("Пользователь не найден"))).size();
+        
+        return new ByteArrayResource(reportContent.getBytes(StandardCharsets.UTF_8));
     }
 }
